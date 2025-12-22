@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     libssl-dev \
     libffi-dev \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 # Create odoo user
@@ -74,9 +75,10 @@ RUN echo "[options]" > ${ODOO_RC} && \
     echo "addons_path = /opt/odoo/odoo/addons" >> ${ODOO_RC} && \
     echo "data_dir = /opt/odoo/.local/share/Odoo" >> ${ODOO_RC}
 
-# Copy scripts
+# Copy scripts and fix line endings
 COPY bin/* /usr/local/bin/
-RUN chmod +x /usr/local/bin/*
+RUN dos2unix /usr/local/bin/* && \
+    chmod +x /usr/local/bin/*
 
 # Set working directory
 WORKDIR /workspace
