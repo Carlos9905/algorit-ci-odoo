@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+# Script básico para instalar addons
+
+echo "=== Instalando addons desde ${ADDONS_DIR} ==="
+
+# Verificar que el directorio existe
+if [ ! -d "${ADDONS_DIR}" ]; then
+    echo "Error: El directorio ${ADDONS_DIR} no existe"
+    exit 1
+fi
+
+# Agregar addons al path de Odoo
+echo "addons_path=${ADDONS_PATH},${ADDONS_DIR}" >> ${ODOO_RC}
+
+echo "=== Instalación completada ==="
+cat ${ODOO_RC}

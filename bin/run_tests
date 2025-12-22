@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+# Script básico para ejecutar tests
+
+echo "=== Ejecutando tests ==="
+
+# Esperar PostgreSQL
+wait_for_postgres
+
+# Ejecutar Odoo con tests
+odoo -c ${ODOO_RC} \
+    -d ${PGDATABASE} \
+    --test-enable \
+    --stop-after-init \
+    --log-level=test
+
+echo "=== Tests completados ==="

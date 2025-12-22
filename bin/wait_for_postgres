@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+# Script para esperar a que PostgreSQL esté disponible
+
+echo "Esperando a PostgreSQL en ${PGHOST}:5432..."
+
+until pg_isready -h ${PGHOST} -U ${PGUSER} -d postgres -q; do
+  echo "PostgreSQL no está listo - esperando..."
+  sleep 2
+done
+
+echo "PostgreSQL está listo!"
