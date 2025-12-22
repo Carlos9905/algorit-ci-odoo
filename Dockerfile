@@ -80,6 +80,9 @@ COPY bin/* /usr/local/bin/
 RUN dos2unix /usr/local/bin/* && \
     chmod +x /usr/local/bin/*
 
+# Change ownership to odoo user (IMPORTANTE)
+RUN chown -R odoo:odoo /etc/odoo /opt/odoo
+
 # Set working directory
 WORKDIR /workspace
 

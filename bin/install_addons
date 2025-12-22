@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Script básico para instalar addons
+# Script para instalar addons
 
 echo "=== Instalando addons desde ${ADDONS_DIR} ==="
 
@@ -11,8 +11,10 @@ if [ ! -d "${ADDONS_DIR}" ]; then
     exit 1
 fi
 
-# Agregar addons al path de Odoo
+# Remover línea addons_path existente y agregar la nueva
+sed -i '/^addons_path/d' ${ODOO_RC}
 echo "addons_path=${ADDONS_PATH},${ADDONS_DIR}" >> ${ODOO_RC}
 
 echo "=== Instalación completada ==="
+echo "Configuración actual:"
 cat ${ODOO_RC}

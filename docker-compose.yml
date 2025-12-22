@@ -30,6 +30,7 @@ services:
       - PGUSER=odoo
       - PGPASSWORD=odoo
       - PGDATABASE=test_db
+      - ADDONS_DIR=/workspace/addons
     volumes:
       - ./addons:/workspace/addons
       - ./bin:/workspace/bin
