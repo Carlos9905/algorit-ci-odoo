@@ -31,12 +31,12 @@ services:
       - PGPASSWORD=odoo
       - PGDATABASE=test_db
       - ADDONS_DIR=/workspace/addons
-      - COVERAGE_DIR=/workspace/coverage_data  # ← NUEVO
+      - COVERAGE_DIR=/workspace/coverage_data
     volumes:
       - ./addons:/workspace/addons
       - ./bin:/workspace/bin
-      - ./htmlcov:/workspace/htmlcov
-      - ./coverage_data:/workspace/coverage_data  # ← CAMBIADO
+      - ./coverage_data:/workspace/coverage_data
+      - ./.coveragerc:/workspace/.coveragerc
     command: /bin/bash
 
 volumes:

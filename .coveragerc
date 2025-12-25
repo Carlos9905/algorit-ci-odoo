@@ -1,15 +1,47 @@
+# Configuración profesional de coverage para Odoo
 [run]
 branch = True
+source =
+    ./
 omit =
     */tests/*
     */__manifest__.py
     */__init__.py
     */migrations/*
+    */security/*
+    */data/*
+    */demo/*
+    */wizards/*
+    */reports/*
+    setup.py
+    requirements.txt
+
+[paths]
+source =
+    /workspace/addons/
+    ./addons/
 
 [report]
+# Configuración de reportes
 precision = 2
 show_missing = True
 skip_covered = False
+fail_under = 80  # ← FALLA si coverage < 80%
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise AssertionError
+    raise NotImplementedError
+    if __name__ == .__main__.:
 
 [html]
-directory = htmlcov
+directory = coverage_data/htmlcov
+title = "Odoo CI Coverage Report"
+overwrite = True
+include_toolbar = True
+
+[xml]
+path = coverage_data/coverage.xml
+
+[term]
+show_line_counts = True

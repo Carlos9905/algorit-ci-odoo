@@ -39,14 +39,14 @@ echo ""
 echo ">>> Paso 5: Instalando addons en base de datos..."
 odoo -c ${ODOO_RC} -d ${PGDATABASE} -i ${ADDONS_TO_TEST} --stop-after-init --log-level=warn
 
-# 6. Preparar coverage (usar directorio dedicado)
+# 6. Preparar coverage con configuración profesional
 echo ""
-echo ">>> Paso 6: Preparando coverage..."
+echo ">>> Paso 6: Preparando coverage profesional..."
 COVERAGE_DIR=${COVERAGE_DIR:-/workspace/coverage_data}
 rm -rf ${COVERAGE_DIR}/*
 mkdir -p ${COVERAGE_DIR}/htmlcov
 
-# 7. Ejecutar tests con coverage (usar COVERAGE_FILE)
+# 7. Ejecutar tests con coverage
 echo ""
 echo ">>> Paso 7: Ejecutando tests con coverage..."
 export COVERAGE_FILE=${COVERAGE_DIR}/.coverage
@@ -61,19 +61,30 @@ coverage run \
     --stop-after-init \
     --log-level=test
 
-# 8. Generar reportes de coverage
+# 8. Generar TODOS los reportes
 echo ""
-echo ">>> Paso 8: Generando reportes de coverage..."
+echo ">>> Paso 8: Generando reportes múltiples..."
 echo ""
-echo "=== Coverage Report (Texto) ==="
-COVERAGE_FILE=${COVERAGE_DIR}/.coverage coverage report
+echo "=== 1. Coverage Report (Texto Detallado) ==="
+COVERAGE_FILE=${COVERAGE_DIR}/.coverage coverage report --show-missing
 
 echo ""
-echo "=== Generando reporte HTML ==="
+echo "=== 2. Coverage XML (para CI/CD) ==="
+COVERAGE_FILE=${COVERAGE_DIR}/.coverage coverage xml -o ${COVERAGE_DIR}/coverage.xml
+
+echo ""
+echo "=== 3. Coverage HTML (Interactivo) ==="
 COVERAGE_FILE=${COVERAGE_DIR}/.coverage coverage html -d ${COVERAGE_DIR}/htmlcov
-echo "Reporte HTML generado en: ${COVERAGE_DIR}/htmlcov/index.html"
+echo "📊 Reporte HTML: ${COVERAGE_DIR}/htmlcov/index.html"
 
 echo ""
-echo "=========================================="
-echo "  TESTS COMPLETADOS EXITOSAMENTE"
-echo "=========================================="
+echo "=== 4. Verificación de Límites Mínimos ==="
+COVERAGE_FILE=${COVERAGE_DIR}/.coverage coverage report --fail-under=80
+if [ $? -ne 0 ]; then
+    echo "❌ ERROR: Coverage por debajo del 80% mínimo requerido"
+    exit 1
+fi
+
+echo ""
+echo "✅ Coverage mínimo OK (80%+)"
+echo "📈 Total coverage: $(COVERAGE_FILE=${COVERAGE_DIR}/.coverage coverage report | tail -1 | awk '{print $4}')"
