@@ -1,4 +1,4 @@
-name: Publish py3.10-odoo16.0
+name: Publish py3.10-odoo16.0 # Versión de Odoo
 on:
   push:
     tags: ["v16.*"]
