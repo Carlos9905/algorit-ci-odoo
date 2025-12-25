@@ -5,27 +5,37 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Login GHCR
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to GHCR
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Build & Push
+
+    - name: Build and push
       uses: docker/build-push-action@v6
       with:
         context: .
         push: true
         tags: |
-          ghcr.io/${{ github.repository_owner }}/algorit-ci-odoo:py3.10-odoo16.0:latest
-          ghcr.io/${{ github.repository_owner }}/algorit-ci-odoo:py3.10-odoo16.0:v16.0.1
+          ghcr.io/Carlos9905/algorit-ci-odoo:py3.10-odoo16.0:latest
+          ghcr.io/Carlos9905/algorit-ci-odoo:py3.10-odoo16.0:v16.0.1
         build-args: |
           python_version=3.10
           odoo_version=16.0
           codename=jammy
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
