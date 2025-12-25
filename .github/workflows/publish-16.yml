@@ -12,14 +12,14 @@ jobs:
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
-        username: Carlos9905
+        username: carlos9905
         password: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Build
       run: |
         docker buildx create --use
         docker buildx build --platform linux/amd64 \
-          -t ghcr.io/Carlos9905/algorit-ci-odoo:16.0 \
+          -t ghcr.io/carlos9905/algorit-ci-odoo:16.0 \
           --build-arg python_version=3.10 \
           --build-arg odoo_version=16.0 \
           --build-arg codename=jammy \
