@@ -32,6 +32,9 @@ services:
       - PGDATABASE=test_db
       - ADDONS_DIR=/workspace/addons
       - COVERAGE_DIR=/workspace/coverage_data
+      - ODOO_VERSION=16.0
+      - INCLUDE=${INCLUDE:-}
+      - EXCLUDE=${EXCLUDE:-}
     volumes:
       - ./addons:/workspace/addons
       - ./bin:/workspace/bin
@@ -40,4 +43,4 @@ services:
 
 volumes:
   postgres-data:
-  coverage_data:  # ← NUEVO: Volumen persistente para coverage
+  coverage_data:

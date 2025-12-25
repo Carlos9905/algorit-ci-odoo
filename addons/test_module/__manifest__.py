@@ -4,9 +4,9 @@
     'category': 'Tools',
     'summary': 'Addon de prueba para CI',
     'author': 'Tu Nombre',
-    'depends': ['base'],
+    'depends': ['base', 'account_budget'],
     'data': [
-        'security/ir.model.access.csv',  # ← NUEVO
+        'security/ir.model.access.csv',
     ],
     'installable': True,
     'application': False,

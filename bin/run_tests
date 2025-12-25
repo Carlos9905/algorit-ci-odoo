@@ -17,15 +17,10 @@ install_addons
 
 # 3. Listar addons a probar
 echo ""
-echo ">>> Paso 3: Detectando addons a probar..."
+echo ">>> Paso 3: Detectando addons..."
+echo "   INCLUDE=${INCLUDE:-todos} EXCLUDE=${EXCLUDE:-ninguno}"
 ADDONS_TO_TEST=$(list_addons_to_test | tr '\n' ',' | sed 's/,$//')
-
-if [ -z "$ADDONS_TO_TEST" ]; then
-    echo "Error: No se encontraron addons para probar en ${ADDONS_DIR}"
-    exit 1
-fi
-
-echo "Addons detectados: ${ADDONS_TO_TEST}"
+echo "   Addons: ${ADDONS_TO_TEST}"
 
 # 4. Inicializar base de datos
 echo ""

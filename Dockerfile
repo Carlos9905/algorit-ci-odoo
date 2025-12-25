@@ -50,9 +50,13 @@ ENV PATH="/opt/odoo/venv/bin:$PATH"
 # Upgrade pip
 RUN pip install --upgrade pip setuptools wheel
 
-# Clone Odoo
+# Clone Odoo Community (siempre)
 WORKDIR /opt/odoo
 RUN git clone --depth 1 --branch ${odoo_version} https://github.com/${odoo_org_repo}.git odoo
+
+# 🔥 NUEVO: Preparar directorio Enterprise
+RUN mkdir -p /opt/odoo/enterprise && \
+    echo "# Enterprise (requiere GITHUB_TOKEN)" > /opt/odoo/enterprise/README.md
 
 # ⚠️ MODIFICAR requirements.txt para Python 3.10 compatibility
 RUN sed -i 's/gevent==21.8.0/gevent==22.10.2/g' /opt/odoo/odoo/requirements.txt && \
@@ -72,7 +76,7 @@ RUN mkdir -p /etc/odoo
 
 # Create basic Odoo configuration
 RUN echo "[options]" > ${ODOO_RC} && \
-    echo "addons_path = /opt/odoo/odoo/addons" >> ${ODOO_RC} && \
+    echo "addons_path = /opt/odoo/odoo/addons,/opt/odoo/enterprise,/workspace/addons" >> ${ODOO_RC} && \
     echo "data_dir = /opt/odoo/.local/share/Odoo" >> ${ODOO_RC}
 
 # Copy scripts and fix line endings
@@ -86,13 +90,13 @@ RUN chown -R odoo:odoo /etc/odoo /opt/odoo
 # Set working directory
 WORKDIR /workspace
 
-# Default environment variables for PostgreSQL
+# Default environment variables
 ENV PGHOST=postgres \
     PGUSER=odoo \
     PGPASSWORD=odoo \
     PGDATABASE=odoo \
-    ADDONS_DIR=. \
-    ADDONS_PATH=/opt/odoo/odoo/addons
+    ADDONS_DIR=/workspace/addons \
+    ENTERPRISE_REPO_URL=https://github.com/odoo/enterprise
 
 USER odoo
 

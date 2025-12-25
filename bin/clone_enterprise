@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+echo "🔐 Verificando acceso Enterprise..."
+
+if [ -z "$GITHUB_TOKEN" ]; then
+    echo "⚠️  GITHUB_TOKEN no configurado. Usando SOLO Community."
+    touch /opt/odoo/enterprise.NO_TOKEN
+    exit 0
+fi
+
+echo "🌐 Probando acceso a ${ENTERPRISE_REPO_URL}..."
+if ! curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+    "${ENTERPRISE_REPO_URL}" >/dev/null 2>&1; then
+    echo "❌ Sin acceso a Enterprise. Usando SOLO Community."
+    touch /opt/odoo/enterprise.NO_ACCESS
+    exit 0
+fi
+
+echo "✅ Acceso OK. Clonando Enterprise..."
+rm -rf /opt/odoo/enterprise/*
+git clone --depth 1 --branch ${ODOO_VERSION:-16.0} \
+    "https://x-access-token:${GITHUB_TOKEN}@github.com/odoo/enterprise.git" \
+    /opt/odoo/enterprise
+
+echo "✅ Enterprise clonado exitosamente"
+echo "📁 Módulos encontrados: $(find /opt/odoo/enterprise -name '__manifest__.py' -not -path '*/tests/*' | wc -l)"
