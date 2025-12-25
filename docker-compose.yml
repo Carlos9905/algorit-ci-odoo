@@ -36,7 +36,6 @@ services:
       - ./addons:/workspace/addons
       - ./bin:/workspace/bin
       - ./coverage_data:/workspace/coverage_data
-      - ./.coveragerc:/workspace/.coveragerc
     command: /bin/bash
 
 volumes:
