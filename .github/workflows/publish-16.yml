@@ -1,43 +1,27 @@
-name: Publish py3.10-odoo16.0
+name: Publish 16.0
 on:
-  push:
-    tags: ["v16.*"]
-  workflow_dispatch:
+  workflow_dispatch:  # ← MANUAL por ahora
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Login to GHCR
+    - uses: actions/checkout@v4
+    
+    - name: Docker Login
       uses: docker/login-action@v3
       with:
         registry: ghcr.io
-        username: ${{ github.repository_owner }}
+        username: Carlos9905
         password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Build and push
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        platforms: linux/amd64
-        push: true
-        tags: ghcr.io/Carlos9905/algorit-ci-odoo:py3.10-odoo16.0:latest,ghcr.io/Carlos9905/algorit-ci-odoo:py3.10-odoo16.0:v16.0.1
-        build-args: |
-          python_version=3.10
-          odoo_version=16.0
-          codename=jammy
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+    
+    - name: Build & Push
+      run: |
+        docker buildx create --use
+        docker buildx build \
+          --platform linux/amd64 \
+          --tag ghcr.io/Carlos9905/algorit-ci-odoo:py3.10-odoo16.0:latest \
+          --build-arg python_version=3.10 \
+          --build-arg odoo_version=16.0 \
+          --build-arg codename=jammy \
+          --push .
