@@ -15,6 +15,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -29,10 +32,9 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         context: .
+        platforms: linux/amd64
         push: true
-        tags: |
-          ghcr.io/Carlos9905/algorit-ci-odoo:py3.10-odoo16.0:latest
-          ghcr.io/Carlos9905/algorit-ci-odoo:py3.10-odoo16.0:v16.0.1
+        tags: ghcr.io/Carlos9905/algorit-ci-odoo:py3.10-odoo16.0:latest,ghcr.io/Carlos9905/algorit-ci-odoo:py3.10-odoo16.0:v16.0.1
         build-args: |
           python_version=3.10
           odoo_version=16.0
