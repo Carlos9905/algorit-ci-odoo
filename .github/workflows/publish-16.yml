@@ -1,4 +1,4 @@
-name: Publish py3.10-odoo16.0 # Versión de Odoo
+name: Publish py3.10-odoo16.0
 on:
   push:
     tags: ["v16.*"]
@@ -29,34 +29,39 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Build & Test
-      id: build
+    - name: Build & Test (local)
+      id: build-local
       uses: docker/build-push-action@v6
       with:
         context: .
         file: Dockerfile
         load: true
-        tags: ghcr.io/${{ github.repository }}/py3.10-odoo16.0:local-test
+        tags: localhost:5000/py3.10-odoo16.0:local-test  # ← LOCALHOST para test
         build-args: |
           python_version=3.10
           odoo_version=16.0
           codename=jammy
     
-    - name: Test Image
+    - name: Test Image Locally
       run: |
-        docker run --rm -e PGHOST=host.docker.internal ghcr.io/${{ github.repository }}/py3.10-odoo16.0:local-test runtests.sh
+        mkdir -p test-addons
+        echo '{"name": "test", "version": "16.0.1.0.0"}' > test-addons/__manifest__.py
+        docker run --rm -v $(pwd)/test-addons:/workspace/addons -e PGHOST=host.docker.internal localhost:5000/py3.10-odoo16.0:local-test run_tests
     
-    - name: Push Production
+    - name: Build & Push Production
       if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v16.')
+      id: build-prod
       uses: docker/build-push-action@v6
       with:
         context: .
         file: Dockerfile
         push: true
         tags: |
-          ghcr.io/${{ github.repository }}/py3.10-odoo16.0:latest
-          ghcr.io/${{ github.repository }}/py3.10-odoo16.0:${{ github.ref_name }}
+          ghcr.io/${{ github.repository_owner }}/algorit-ci-odoo:py3.10-odoo16.0:latest
+          ghcr.io/${{ github.repository_owner }}/algorit-ci-odoo:py3.10-odoo16.0:${{ github.ref_name }}
         build-args: |
           python_version=3.10
           odoo_version=16.0
           codename=jammy
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
