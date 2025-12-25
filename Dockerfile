@@ -65,7 +65,7 @@ RUN pip install -r /opt/odoo/odoo/requirements.txt
 RUN pip install -e /opt/odoo/odoo
 
 # Install additional tools
-RUN pip install coverage
+RUN pip install coverage[toml]
 
 # Create config directory
 RUN mkdir -p /etc/odoo

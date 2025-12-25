@@ -1,18 +1,79 @@
 #!/bin/bash
 set -e
 
-# Script básico para ejecutar tests
+# Script completo para ejecutar tests con coverage
 
-echo "=== Ejecutando tests ==="
+echo "=========================================="
+echo "  EJECUTANDO TESTS DE ODOO"
+echo "=========================================="
 
-# Esperar PostgreSQL
+# 1. Esperar PostgreSQL
+echo ""
+echo ">>> Paso 1: Verificando PostgreSQL..."
 wait_for_postgres
 
-# Ejecutar Odoo con tests
-odoo -c ${ODOO_RC} \
+# 2. Instalar addons
+echo ""
+echo ">>> Paso 2: Instalando addons..."
+install_addons
+
+# 3. Listar addons a probar
+echo ""
+echo ">>> Paso 3: Detectando addons a probar..."
+ADDONS_TO_TEST=$(list_addons_to_test | tr '\n' ',' | sed 's/,$//')
+
+if [ -z "$ADDONS_TO_TEST" ]; then
+    echo "Error: No se encontraron addons para probar en ${ADDONS_DIR}"
+    exit 1
+fi
+
+echo "Addons detectados: ${ADDONS_TO_TEST}"
+
+# 4. Inicializar base de datos
+echo ""
+echo ">>> Paso 4: Inicializando base de datos..."
+init_test_database
+
+# 5. Instalar addons en la base de datos
+echo ""
+echo ">>> Paso 5: Instalando addons en base de datos..."
+odoo -c ${ODOO_RC} -d ${PGDATABASE} -i ${ADDONS_TO_TEST} --stop-after-init --log-level=warn
+
+# 6. Preparar coverage (usar directorio dedicado)
+echo ""
+echo ">>> Paso 6: Preparando coverage..."
+COVERAGE_DIR=${COVERAGE_DIR:-/workspace/coverage_data}
+rm -rf ${COVERAGE_DIR}/*
+mkdir -p ${COVERAGE_DIR}/htmlcov
+
+# 7. Ejecutar tests con coverage (usar COVERAGE_FILE)
+echo ""
+echo ">>> Paso 7: Ejecutando tests con coverage..."
+export COVERAGE_FILE=${COVERAGE_DIR}/.coverage
+coverage run \
+    --source=${ADDONS_DIR} \
+    --omit="*/tests/*,*/__manifest__.py,*/__init__.py" \
+    $(which odoo) \
+    -c ${ODOO_RC} \
     -d ${PGDATABASE} \
+    -u ${ADDONS_TO_TEST} \
     --test-enable \
     --stop-after-init \
     --log-level=test
 
-echo "=== Tests completados ==="
+# 8. Generar reportes de coverage
+echo ""
+echo ">>> Paso 8: Generando reportes de coverage..."
+echo ""
+echo "=== Coverage Report (Texto) ==="
+COVERAGE_FILE=${COVERAGE_DIR}/.coverage coverage report
+
+echo ""
+echo "=== Generando reporte HTML ==="
+COVERAGE_FILE=${COVERAGE_DIR}/.coverage coverage html -d ${COVERAGE_DIR}/htmlcov
+echo "Reporte HTML generado en: ${COVERAGE_DIR}/htmlcov/index.html"
+
+echo ""
+echo "=========================================="
+echo "  TESTS COMPLETADOS EXITOSAMENTE"
+echo "=========================================="

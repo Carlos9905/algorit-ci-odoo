@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+# Script para listar addons a probar en ADDONS_DIR
+
+if [ ! -d "${ADDONS_DIR}" ]; then
+    echo "Error: El directorio ${ADDONS_DIR} no existe"
+    exit 1
+fi
+
+# Buscar todos los directorios que tengan __manifest__.py
+for addon_dir in ${ADDONS_DIR}/*/; do
+    if [ -f "${addon_dir}__manifest__.py" ]; then
+        addon_name=$(basename "$addon_dir")
+        echo "$addon_name"
+    fi
+done

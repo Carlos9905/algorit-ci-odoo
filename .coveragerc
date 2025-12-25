@@ -1,0 +1,15 @@
+[run]
+branch = True
+omit =
+    */tests/*
+    */__manifest__.py
+    */__init__.py
+    */migrations/*
+
+[report]
+precision = 2
+show_missing = True
+skip_covered = False
+
+[html]
+directory = htmlcov

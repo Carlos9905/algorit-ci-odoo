@@ -31,10 +31,14 @@ services:
       - PGPASSWORD=odoo
       - PGDATABASE=test_db
       - ADDONS_DIR=/workspace/addons
+      - COVERAGE_DIR=/workspace/coverage_data  # ← NUEVO
     volumes:
       - ./addons:/workspace/addons
       - ./bin:/workspace/bin
+      - ./htmlcov:/workspace/htmlcov
+      - ./coverage_data:/workspace/coverage_data  # ← CAMBIADO
     command: /bin/bash
 
 volumes:
   postgres-data:
+  coverage_data:  # ← NUEVO: Volumen persistente para coverage

@@ -5,7 +5,9 @@
     'summary': 'Addon de prueba para CI',
     'author': 'Tu Nombre',
     'depends': ['base'],
-    'data': [],
+    'data': [
+        'security/ir.model.access.csv',  # ← NUEVO
+    ],
     'installable': True,
     'application': False,
     'license': 'LGPL-3',
