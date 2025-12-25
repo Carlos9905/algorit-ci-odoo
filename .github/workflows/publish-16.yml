@@ -2,6 +2,10 @@ name: Publish 16.0
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write  # ← CRÍTICO
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,7 +19,7 @@ jobs:
         username: carlos9905
         password: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: Build
+    - name: Build & Push
       run: |
         docker buildx create --use
         docker buildx build --platform linux/amd64 \
